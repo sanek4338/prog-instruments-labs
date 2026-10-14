@@ -1,55 +1,47 @@
-.PHONY: help install lint format format-check typecheck fullcheck run test fulltest precommit clean
-
-PYTHON := python
-RUFF := ruff
-PYRIGHT := pyright
+.PHONY: help install run lint format format-check typecheck fullcheck test fulltest precommit clean
 
 help:
-	@echo "Доступные команды:"
-	@echo "  make install       - установка зависимостей"
-	@echo "  make lint          - запуск линтера Ruff"
-	@echo "  make format        - форматирование кода"
-	@echo "  make format-check  - проверка форматирования"
-	@echo "  make typecheck     - проверка типов Pyright"
-	@echo "  make fullcheck     - все статические проверки"
-	@echo "  make run           - запуск программы"
-	@echo "  make test          - запуск тестов"
-	@echo "  make fulltest      - все проверки и тесты"
-	@echo "  make precommit     - установка git-хуков"
-	@echo "  make clean         - очистка кэша"
+	@echo Available commands:
+	@echo   make install       - install dependencies
+	@echo   make run           - run the script on test data
+	@echo   make lint          - run linter
+	@echo   make format        - format code
+	@echo   make format-check  - check formatting
+	@echo   make typecheck     - run type checker
+	@echo   make fullcheck     - all static checks
+	@echo   make test          - run tests
+	@echo   make fulltest      - checks + tests
+	@echo   make precommit     - install git hooks
+	@echo   make clean         - clean caches
 
 install:
-	pip install ruff pyright pre-commit pytest
-
-lint:
-	$(RUFF) check .
-
-format:
-	$(RUFF) format .
-
-format-check:
-	$(RUFF) format --check .
-
-typecheck:
-	$(PYRIGHT)
-
-fullcheck: lint format-check typecheck
-	@echo "Все проверки пройдены!"
+	pip install -r requirements.txt
 
 run:
-	$(PYTHON) uno.py data.txt result.txt
+	python uno.py data.txt result.txt
+
+lint:
+	ruff check .
+
+format:
+	ruff format .
+
+format-check:
+	ruff format . --check
+
+typecheck:
+	pyright
+
+fullcheck: lint typecheck format-check
 
 test:
-	$(PYTHON) -m pytest tests/ -v
+	pytest -v
 
 fulltest: fullcheck test
 
 precommit:
-	pre-commit install
-	pre-commit install --hook-type pre-push
+	pre-commit install --config .pre-commit-config.yaml
+	pre-commit install --hook-type pre-push --config .pre-commit-config.yaml
 
 clean:
-	find . -type d -name "__pycache__" -exec rm -rf {} +
-	find . -type d -name ".pytest_cache" -exec rm -rf {} +
-	find . -type d -name ".ruff_cache" -exec rm -rf {} +
-	find . -type d -name ".mypy_cache" -exec rm -rf {} +
+	powershell -Command "Get-ChildItem -Recurse -Directory -Include __pycache__,.pytest_cache,.ruff_cache | Remove-Item -Recurse -Force"

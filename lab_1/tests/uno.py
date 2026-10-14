@@ -15,7 +15,12 @@ PROFILE_SPLIT_PATTERN = re.compile(r"\n(?:\d+\)\s*\n)")
 
 
 def parse_console() -> argparse.Namespace:
-    """Парсер для аргументов в консоли."""
+    """
+    Парсер для аргументов в консоли
+
+    r_file Путь к исходному файлу с анкетами
+    w_file Путь для сохранения файла с корректными анкетами
+    """
     parser = argparse.ArgumentParser(
         description="Фильтрация анкет по корректности дат рождения"
     )
@@ -56,9 +61,7 @@ def is_valid_real_date(date_str: str) -> bool:
         return True
 
 
-def find_incorrect_birthdates(
-    text: str,
-) -> tuple[list[str], list[str]]:
+def find_incorrect_birthdates(text: str) -> tuple[list[str], list[str]]:
     """
     Находит анкеты с некорректными датами рождения и разделяет их.
 
